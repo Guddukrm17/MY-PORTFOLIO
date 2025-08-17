@@ -1,43 +1,36 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import ProjectCard from "./ProjectCard";
 
-const projects = [
-	{
-		title: "Blogging Website",
-		main: "A modern blogging platform built with Next.js and component libraries for a seamless writing experience.",
-		demoUrl: "#",
-		codeUrl: "#",
-	},
-	{
-		title: "YouTube Clone",
-		main: "A responsive YouTube clone using Next.js, featuring video streaming and user authentication.",
-		demoUrl: "#",
-		codeUrl: "#",
-	},
-	{
-		title: "Netflix Clone",
-		main: "A Netflix-inspired web app built with Next.js, showcasing movie browsing and streaming UI.",
-		demoUrl: "#",
-		codeUrl: "#",
-	},
-	{
-		title: "My Awesome Project",
-		main: "A brief description of the project goes here.",
-		demoUrl: "https://demo-link.com",
-		codeUrl: "https://github.com/your-repo",
-	},
-];
+const GITHUB_USERNAME = "guddukrm17";
 
 const Projects = () => {
+	const [projects, setProjects] = useState([]);
+
+	useEffect(() => {
+		fetch(`https://api.github.com/users/${GITHUB_USERNAME}/repos`)
+			.then((res) => res.json())
+			.then((data) => {
+				const filtered = data
+					.filter((repo) => !repo.fork)
+					.map((repo) => ({
+						title: repo.name,
+						main: repo.description || "No description provided.",
+						demoUrl: repo.homepage || repo.html_url,
+						codeUrl: repo.html_url,
+					}));
+				setProjects(filtered);
+			});
+	}, []);
+
 	return (
 		<section
 			id="Projects"
-			className="min-h-screen px-4 py-16 md:px-24 bg-indigo-900"
+			className="min-h-screen w-full px-2 sm:px-4 md:px-8 lg:px-24 py-8 sm:py-12 md:py-16 bg-indigo-900 flex flex-col items-center"
 		>
-			<h1 className="text-4xl md:text-5xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-blue-500 via-purple-500 to-indigo-500 mb-10 text-center">
+			<h1 className="w-full text-3xl sm:text-4xl md:text-5xl font-extrabold text-white mb-6 sm:mb-10 text-center">
 				Projects
 			</h1>
-			<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+			<div className="w-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
 				{projects.map((project, idx) => (
 					<ProjectCard
 						key={idx}
@@ -45,7 +38,6 @@ const Projects = () => {
 						main={project.main}
 						demoUrl={project.demoUrl}
 						codeUrl={project.codeUrl}
-						imageUrl={project.imageUrl}
 					/>
 				))}
 			</div>
